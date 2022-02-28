@@ -1,13 +1,20 @@
 <?php
 
-class FinalResult {
-    function results($f) {
+class FinalResult
+{
+    function results($f)
+    {
+        // CSVファイルのパスが入力されているか判定
+        if (!file_exists($f) || pathinfo($f)['extension'] !== 'csv') {
+            error_log('不正なファイルパスです');
+            return;
+        };
         $d = fopen($f, "r");
         $h = fgetcsv($d);
         $rcs = [];
-        while(!feof($d)) {
+        while (!feof($d)) {
             $r = fgetcsv($d);
-            if(count($r) == 16) {
+            if (count($r) == 16) {
                 $amt = !$r[8] || $r[8] == "0" ? 0 : (float) $r[8];
                 $ban = !$r[6] ? "Bank account number missing" : (int) $r[6];
                 $bac = !$r[2] ? "Bank branch code missing" : $r[2];
@@ -26,7 +33,9 @@ class FinalResult {
                 $rcs[] = $rcd;
             }
         }
-        $rcs = array_filter($rcs);
+        // 第二引数にコールバック関数を設定しておらず、不要なコードなので削除
+        // $rcs = array_filter($rcs);
+
         return [
             "filename" => basename($f),
             "document" => $d,
@@ -36,5 +45,3 @@ class FinalResult {
         ];
     }
 }
-
-?>
